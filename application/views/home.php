@@ -138,7 +138,10 @@
     $interval(function () {$http.get('<?=base_url('Home/AmbilData');?>').then(function(response){$scope.datas=response.data;});}, 1000);
 
     $scope.hapus = function(Data) {
-      $http({
+      // make sure to confirm before delete
+   if(confirm('delete this data?'))
+     {
+       $http({
         method: "post",
         url: "<?=base_url('Home/HapusData');?>",
         data: {
@@ -149,9 +152,13 @@
            var result = angular.fromJson(response.data);
 
            if (result == "1") {
-              swal("Sukses", "Data Berhasil Dihapus", "success");  
+              swal("Sukses", "Data Berhasil Dihapus", "success");
            }
       });
+     } else {
+       swal("Batal", "Penghapusan dibatalkan!", "info");
+     }
+      
     }
 
  		$scope.proses = function () {

@@ -12,16 +12,19 @@ class Home extends CI_Controller {
 	
 	public function index()
 	{	
-		$data["tgl_lahir_arr"]   = $this->System->DateOpt("tanggal");
-		$data["bln_lahir_arr"]   = $this->System->DateOpt("bulan");
-		$data["thn_lahir_arr"]   = $this->System->DateOpt("tahun");
-		$data["semuadata"]       = $this->System->ambil_data();
+      	$data = [
+        	'tgl_lahir_arr' => $this->DateOpt('tanggal'),
+          	'bln_lahir_arr' => $this->DateOpt('bulan'),
+          	'thn_lahir_arr' => $this->DateOpt('tahun'),
+          	'semuadata'	=> $this->System->ambil_data()
+        ];
+      
 		$this->load->view('home', $data);
 	}
 
 	public function SimpanData() {
 
-		if (!$_SERVER['HTTP_X_REQUESTED_WITH'])
+		if (!$this->input->is_ajax_request())
 		{
 			redirect("");
 		}
@@ -30,7 +33,7 @@ class Home extends CI_Controller {
 
 		$data_arr = array
 		            (
-		            	"ID"             =>  $this->System->id_orang(),
+		            	"ID"             =>  $this->id_orang(),
 		            	"NamaLengkap"    =>  $_POST["NamaLengkap"],
 		            	"TanggalLahir"   =>  $_POST["TanggalLahir"],
 		            	"BulanLahir"     =>  $_POST["BulanLahir"],
@@ -61,6 +64,7 @@ class Home extends CI_Controller {
 	    }else if(!preg_match("/^[a-zA-Z-0-9 ]*$/", $data_arr["Alamat"])) {
 	    	echo json_encode("11");
 	    }else {
+          // nama tidak boleh sama?
 	    	if ($this->System->cek_nama($data_arr["NamaLengkap"])) {
 	    		echo json_encode("12");
 	    	}else {
@@ -75,7 +79,7 @@ class Home extends CI_Controller {
 
 	public function AmbilData() {
 
-		if (!$_SERVER['HTTP_X_REQUESTED_WITH'])
+		if (!$this->input->is_ajax_request())
 		{
 			redirect("");
 		}
@@ -87,20 +91,75 @@ class Home extends CI_Controller {
 
 	public function HapusData() {
 
-		if (!$_SERVER['HTTP_X_REQUESTED_WITH'])
+		if (!$this->input->is_ajax_request())
 		{
 			redirect("");
 		}
-
 		$_POST = json_decode(file_get_contents("php://input"), TRUE);
 
-		$data_arr = array
-		            (
-		            	"ID"             =>  $_POST["ID"]
-		            );
-
-		$this->System->hapus_data($data_arr["ID"]);
+		$this->System->hapus_data($_POST['ID']);
 
 		echo json_encode("1");
+	}
+  
+  
+  	/**
+    * move here from model
+    * karena fungsi model untuk interaksi dengan database
+    */
+    private function DateOpt($Type) {
+		 switch ($Type) {
+		 	case "tanggal":
+		 		$a=array();
+
+				for ($b=1;$b<=31;$b++) {
+					$a[$b]=$b;
+				}
+
+	  			return $a;
+		 	break;
+		 	case "Tanggal":
+		 		$a=array();
+
+				for ($b=1;$b<=31;$b++) {
+					$a[$b]=$b;
+				}
+
+	  			return $a;
+		 	break;
+		 	case "bulan":
+		 		return array("1" => "Januari","2" => "Februari","3" => "Maret","4" => "April","5" => "Mei","6" => "Juni","7" => "Juli","8" => "Agustus","9" => "September","10" => "Oktober","11" => "November","12" => "Desember");
+		 	break;
+		 	case "Bulan":
+		 		return array("1" => "Januari","2" => "Februari","3" => "Maret","4" => "April","5" => "Mei","6" => "Juni","7" => "Juli","8" => "Agustus","9" => "September","10" => "Oktober","11" => "November","12" => "Desember");
+		 	break;
+		 	case "tahun":
+		 		$c=array();
+
+		 		for ($d = 1950;$d <= date("Y");$d++) {
+		 		   $c[$d]=$d;
+		 		}
+
+		 		return $c;
+		 	break;
+		 	case "Tahun":
+		 		$c=array();
+
+		 		for ($d = 1950;$d <= date("Y");$d++) {
+		 		   $c[$d]=$d;
+		 		}
+
+		 		return $c;
+		 	break;
+		 	default:
+		 	   return "Tipe tidak tersedia";
+		 	break;
+		 }
+	}
+  
+  
+	private function id_orang()
+	{
+        return substr(str_shuffle("AaBbCcDdEeFfGgHhIiJjKkLlMnOoPpQqRrSsTtUuVvWwXxYyZz0123456789"),0,30);
 	}
 }
