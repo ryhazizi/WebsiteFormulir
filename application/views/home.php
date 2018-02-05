@@ -204,8 +204,7 @@
  					   $scope.alamat = "";
  					   $scope.form_URro7kperWtQ2Dgdm7k1.$setPristine();
  					   $scope.form_URro7kperWtQ2Dgdm7k1.$setUntouched();
-             $scope.data = $result;
- 				     swal("Sukses", "Data Berhasil Disimpan", "success");    	
+ 				           swal("Sukses", "Data Berhasil Disimpan", "success");    	
  				}
 
  			});
