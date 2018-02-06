@@ -139,9 +139,19 @@
 
     $scope.hapus = function(Data) {
       // make sure to confirm before delete
-   if(confirm('delete this data?'))
-     {
-       $http({
+
+
+  //memperbaharui alert peringatan penghapusan data yang sebelumnya menggunakan alert biasa sekarang menggunakan alert swal 
+  swal({
+  title: "Anda yakin ingin menghapus data ini?",
+  text: "Data yang sudah dihapus tidak dapat diambil kembali",
+  icon: "warning",
+  buttons: true,
+  dangerMode: true,
+})
+.then((willDelete) => {
+  if (willDelete) {
+    $http({
         method: "post",
         url: "<?=base_url('Home/HapusData');?>",
         data: {
@@ -155,10 +165,13 @@
               swal("Sukses", "Data Berhasil Dihapus", "success");
            }
       });
-     } else {
-       swal("Batal", "Penghapusan dibatalkan!", "info");
-     }
-      
+    swal("Data telah dihapus!", {
+      icon: "success",
+    });
+  } else {
+    swal("Penghapusan dibatalkan!");
+  }
+});    
     }
 
  		$scope.proses = function () {
